@@ -107,10 +107,6 @@ def main():
                 padding: 8px;
                 border-bottom: 0px solid #ddd;
             }
-            .news-item a {
-                text-decoration: none;
-                color: white;
-            }
             .sentiment-score {
                 text-align: right;
                 min-width: 100px;
