@@ -1,0 +1,81 @@
+-- CREATE TABLE `company_data` --
+CREATE TABLE `company_data` (
+  `symbol` varchar(10) NOT NULL,
+  `AssetType` text,
+  `Name` text,
+  `Description` text,
+  `CIK` text,
+  `Exchange` text,
+  `Currency` text,
+  `Country` text,
+  `Sector` text,
+  `Industry` text,
+  `Address` text,
+  `OfficialSite` text,
+  `FiscalYearEnd` text,
+  `LatestQuarter` text,
+  `MarketCapitalization` text,
+  `EBITDA` text,
+  `PERatio` text,
+  `PEGRatio` text,
+  `BookValue` text,
+  `DividendPerShare` text,
+  `DividendYield` text,
+  `EPS` text,
+  `RevenuePerShareTTM` text,
+  `ProfitMargin` text,
+  `OperatingMarginTTM` text,
+  `ReturnOnAssetsTTM` text,
+  `ReturnOnEquityTTM` text,
+  `RevenueTTM` text,
+  `GrossProfitTTM` text,
+  `DilutedEPSTTM` text,
+  `QuarterlyEarningsGrowthYOY` text,
+  `QuarterlyRevenueGrowthYOY` text,
+  `AnalystTargetPrice` text,
+  `AnalystRatingStrongBuy` text,
+  `AnalystRatingBuy` text,
+  `AnalystRatingHold` text,
+  `AnalystRatingSell` text,
+  `AnalystRatingStrongSell` text,
+  `TrailingPE` text,
+  `ForwardPE` text,
+  `PriceToSalesRatioTTM` text,
+  `PriceToBookRatio` text,
+  `EVToRevenue` text,
+  `EVToEBITDA` text,
+  `Beta` text,
+  `52WeekHigh` text,
+  `52WeekLow` text,
+  `50DayMovingAverage` text,
+  `200DayMovingAverage` text,
+  `SharesOutstanding` text,
+  `DividendDate` text,
+  `ExDividendDate` text,
+  PRIMARY KEY (`symbol`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- CREATE TABLE `daily_data` --
+CREATE TABLE `daily_data` (
+  `symbol` varchar(10) NOT NULL,
+  `date` date NOT NULL,
+  `open` float DEFAULT NULL,
+  `high` float DEFAULT NULL,
+  `low` float DEFAULT NULL,
+  `close` float DEFAULT NULL,
+  `volume` bigint DEFAULT NULL,
+  UNIQUE KEY `unique_symbol_date` (`symbol`,`date`),
+  CONSTRAINT `daily_data_ibfk_1` FOREIGN KEY (`symbol`) REFERENCES `company_data` (`symbol`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- CREATE TABLE `technical_indicators` --
+CREATE TABLE `technical_indicators` (
+  `symbol` varchar(10) NOT NULL,
+  `date` date DEFAULT NULL,
+  `sma` decimal(10,4) DEFAULT NULL,
+  `ema` decimal(10,4) DEFAULT NULL,
+  `rsi` decimal(10,4) DEFAULT NULL,
+  KEY `symbol` (`symbol`),
+  CONSTRAINT `technical_indicators_ibfk_1` FOREIGN KEY (`symbol`) REFERENCES `company_data` (`symbol`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
