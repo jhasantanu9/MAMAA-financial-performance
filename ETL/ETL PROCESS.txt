@@ -1,0 +1,42 @@
+Data Extraction
+
+This script collects financial data for MAMAA companies (Meta, Apple, Microsoft, Amazon, and Alphabet) using the Alpha Vantage API. It fetches weekly and monthly adjusted time series data, company overview data, and technical indicators such as SMA, EMA, and RSI, and stores this data in JSON files for further processing.
+
+Steps:
+
+1. Set Up API Parameters: Define the API key and the list of companies (symbols) to collect data for.
+
+2. Define API Functions: Create functions to fetch data from Alpha Vantage for different types of data:
+
+TIME_SERIES_WEEKLY_ADJUSTED: This API returns weekly adjusted time series (last trading day of each week, weekly open, weekly high, weekly low, weekly close, weekly adjusted close, weekly volume, weekly dividend) of the global equity specified, covering 20+ years of historical data.
+TIME_SERIES_MONTHLY_ADJUSTED: This API returns monthly adjusted time series (last trading day of each month, monthly open, monthly high, monthly low, monthly close, monthly adjusted close, monthly volume, monthly dividend) of the equity specified, covering 20+ years of historical data.
+Company Overview: This API returns the company information, financial ratios, and other key metrics for the equity specified. Data is generally refreshed on the same day a company reports its latest earnings and financials.
+Collect Data: Use the defined functions to collect data for each company and each data type. Store the collected data in lists.
+SMA: This API returns the simple moving average (SMA) values. See also: SMA explainer and mathematical reference.
+EMA: This API returns the exponential moving average (EMA) values. See also: EMA explainer and mathematical reference.
+RSI: This API returns the relative strength index (RSI) values. See also: RSI explainer and mathematical reference.
+
+3. Save Data to JSON Files: Save the collected data to JSON files for further processing.
+
+
+Data Transformation
+
+This script transforms the collected financial data for MAMAA companies (Meta, Apple, Microsoft, Amazon, and Alphabet). It loads the raw data from JSON files, converts it into structured DataFrames, cleans and formats the data, renames the columns for consistency, and prepares the data for loading into a database.
+
+Steps:
+
+1. Load JSON Data: The script reads JSON files containing the raw financial data for weekly and monthly adjusted time series, technical indicators (SMA, EMA, RSI), and company overviews.
+
+2. Convert JSON to DataFrames: The raw JSON data is converted into Pandas DataFrames for easier manipulation and analysis. Each type of data (weekly, monthly, technical indicators, and overviews) is processed separately.
+
+3. Clean and Transform Data: The data is cleaned and transformed to ensure consistency and correctness:
+
+Dates are converted to datetime objects.
+Numeric fields are converted to appropriate types.
+Missing or invalid dates are handled gracefully.
+Column names are standardized for consistency across all DataFrames.
+Combine Technical Indicators: The technical indicators (SMA, EMA, RSI) are combined into a single DataFrame for easier analysis.
+
+4.Save Transformed Data: The cleaned and transformed DataFrames are saved as CSV files, ready to be loaded into a database for further analysis and reporting.
+
+5. By transforming the raw financial data into a structured format, this script ensures the data is ready for loading into a database and subsequent analysis, such as building dashboards and generating insights in tools like Power BI.
