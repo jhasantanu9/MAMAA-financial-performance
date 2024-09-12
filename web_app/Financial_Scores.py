@@ -97,7 +97,7 @@ def main(merged_df):
         # Emphasize Overall Investment Score
         st.markdown(
             f"""
-            <div style='height:350px; width:100%;background-color:#F5F5F5;padding:10px;border-radius:10px;text-align:center;font-size:55px;'>
+            <div style='height:350px; width:100%;background-color:#F5F5F5;padding:10px;border-radius:10px;text-align:center;font-size:35px;'>
                 <h2 style='color:#333333;'>Overall Investment Score</h2>
                 <h1 style='color:#4CAF50;'>{latest_data['investment_score']:.2f}</h1>
                 <h2 style='color:#333333;'>Current Investment Signal</h2>
