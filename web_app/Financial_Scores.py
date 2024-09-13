@@ -162,7 +162,12 @@ def main(merged_df, final_data):
         yaxis_title='Closing Price')         
     st.plotly_chart(fig)
 
-    model = load_model(f' ./{selected_company}_lstm_model.h5')
+    # Define the path to the 'web_app' directory
+    models_dir = 'web_app'
+
+    def load_lstm_model(symbol):
+        model_path = os.path.join(models_dir, f'{symbol}_lstm_model.h5')
+        return load_model(model_path)
 
     scaler = MinMaxScaler(feature_range=(0, 1))
     X_scaled = scaler.fit_transform(final_data[final_data['symbol'] == selected_company][['close']])
