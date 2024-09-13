@@ -5,6 +5,7 @@ import plotly.graph_objs as go
 import plotly.express as px
 import streamlit.components.v1 as components
 from sklearn.preprocessing import MinMaxScaler
+import tensorflow as tf
 from keras.models import load_model
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 
