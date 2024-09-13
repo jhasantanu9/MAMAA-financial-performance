@@ -4,7 +4,7 @@ import os
 
 st.cache_data
 def main():
-    st.write(os.listdir()) 
+    st.write(os.listdir('web_app')) 
     # Custom CSS for layout and styling
     st.markdown("""
         <style>
