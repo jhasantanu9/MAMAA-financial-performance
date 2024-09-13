@@ -132,7 +132,7 @@ def main(merged_df, final_data):
                 <h2 style='color:#333333;'>Current Investment Signal</h2>
                 <h1 style='color:#FF5722;'>{latest_signal}</h1>
             </div>
-            """, unsafe_allow_html=True
+            """, unsafe_allow_html=True)
 
     st.markdown('#')
 
