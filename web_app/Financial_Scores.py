@@ -7,6 +7,7 @@ import streamlit.components.v1 as components
 from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras.models import load_model
 from sklearn.metrics import mean_absolute_error, mean_squared_error
+import os
 
 # Define the path to the 'web_app' directory
 models_dir = 'web_app'
