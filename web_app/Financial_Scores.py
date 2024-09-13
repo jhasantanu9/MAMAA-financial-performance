@@ -1,16 +1,75 @@
 # financial_scores.py
 import streamlit as st
+import numpy as np
 import pandas as pd
 import plotly.graph_objs as go
 import plotly.express as px
 import streamlit.components.v1 as components
+from sklearn.preprocessing import MinMaxScaler
+from keras.models import Sequential
+from keras.layers import LSTM, Dense, Dropout
+from keras.optimizers import Adam
+from keras.models import load_model
+from sklearn.metrics import mean_absolute_error, mean_squared_error
 
-def main(merged_df):
+st.cache_data
+def main(merged_df, final_data):
+
+    st.cache_data
+    # Function to create dataset
+    def create_dataset(data, time_step=60):
+        X, y = [], []
+        for i in range(len(data) - time_step):
+            X.append(data[i:(i + time_step), 0])
+            y.append(data[i + time_step, 0])
+        return np.array(X), np.array(y)
+
+    st.cache_data
+    # Function to predict next 30 days
+    def predict_next_30_days(symbol, final_data):
+        company_data = final_data[final_data['symbol'] == symbol][['close']]
+        scaler = MinMaxScaler(feature_range=(0, 1))
+        scaled_data = scaler.fit_transform(company_data)
+
+        time_step = 60
+        X, _ = create_dataset(scaled_data, time_step)
+        X = X.reshape(X.shape[0], X.shape[1], 1)
+
+        model = load_model(f'{symbol}_lstm_model.h5')
+
+        last_60_days = company_data[-60:].values
+        last_60_days_scaled = scaler.transform(last_60_days)
+        X_future = np.array([last_60_days_scaled])
+        X_future = X_future.reshape(X_future.shape[0], X_future.shape[1], 1)
+
+        future_predictions = []
+        for _ in range(30):
+            pred_price = model.predict(X_future)
+            future_predictions.append(pred_price[0][0])
+            pred_price_reshaped = np.array([[[pred_price[0][0]]]])
+            X_future = np.append(X_future[:, 1:, :], pred_price_reshaped, axis=1)
+
+        future_predictions = scaler.inverse_transform(np.array(future_predictions).reshape(-1, 1))
+
+        # Combine historical and future data
+        historical_dates = company_data.index[-60:]
+        future_dates = pd.date_range(start=company_data.index[-1] + pd.Timedelta(days=1), periods=30)
+        
+        historical_prices = company_data[-60:].reset_index(drop=True)
+        future_prices_df = pd.DataFrame(future_predictions, columns=['Predicted_Close'])
+        future_prices_df['date'] = future_dates
+
+        combined_df = pd.concat([historical_prices, future_prices_df.set_index('date')], axis=0)
+        
+        return combined_df, historical_dates, future_dates, future_predictions
+
+    st.cache_data
     # Calculate moving averages
     def calculate_moving_averages(df, window=50):
         df[f'ma_{window}'] = df['close'].rolling(window=window).mean()
         return df
-
+    
+    st.cache_data
     # Calculate investment score
     def calculate_investment_scores(df):
         # Calculate Moving Averages
@@ -42,16 +101,19 @@ def main(merged_df):
 
         return df
 
+    st.cache_data
     # Generate investment signals
     def generate_investment_signals(df):
         df['signal'] = df['investment_score'].apply(lambda x: 'Buy' if x > 0 else ('Sell' if x < 0 else 'Hold'))
         return df
 
+    st.cache_data
     # Function to plot investment score over time
     def plot_investment_score_over_time(df, symbol):
         fig = px.line(df, x='date', y='investment_score', title='Investment Score')
         return fig
 
+    st.cache_data
     # Function to plot the signals
     def plot_signals(df, symbol):
         fig = px.scatter(df, x='date', y='investment_score', color='signal', title='Investment Signal')
@@ -97,7 +159,7 @@ def main(merged_df):
         # Emphasize Overall Investment Score
         st.markdown(
             f"""
-            <div style='height:350px; width:100%;background-color:#F5F5F5;padding:10px;border-radius:10px;text-align:center;font-size:55px;'>
+            <div style='height:350px; width:100%;background-color:#F5F5F5;padding:10px;border-radius:10px;text-align:center;font-size:35px;'>
                 <h2 style='color:#333333;'>Overall Investment Score</h2>
                 <h1 style='color:#4CAF50;'>{latest_data['investment_score']:.2f}</h1>
                 <h2 style='color:#333333;'>Current Investment Signal</h2>
@@ -122,6 +184,71 @@ def main(merged_df):
     with col6:
         # Plot signals
         st.plotly_chart(plot_signals(company_data, selected_company))
+
+    st.markdown('#')
+
+    #30 day Stock Price Prediction
+    st.subheader(f"Next 30-Day Closig Stock Price Prediction using Machine Learning (LSTM) ")
+
+    combined_data, historical_dates, future_dates, future_prices = predict_next_30_days(selected_company, final_data)
+
+    # Plot the combined data
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=historical_dates, y=combined_data['close'][:60], mode='lines', name='Historical Prices'))
+    fig.add_trace(go.Scatter(x=future_dates, y=future_prices.flatten(), mode='lines+markers', name='Predicted Prices'))
+    fig.update_layout(
+        title= f'{selected_company}',
+        yaxis_title='Closing Price')         
+    st.plotly_chart(fig)
+
+    # Load the model
+    model = load_model(f'{selected_company}_lstm_model.h5')
+
+    # Calculate performance metrics
+    scaler = MinMaxScaler(feature_range=(0, 1))
+    X_scaled = scaler.fit_transform(final_data[final_data['symbol'] == selected_company][['close']])
+    X, y = create_dataset(X_scaled, time_step=60)
+    
+    y_pred = model.predict(X)
+    y_pred_rescaled = scaler.inverse_transform(y_pred.reshape(-1, 1))
+    y_actual_rescaled = scaler.inverse_transform(y.reshape(-1, 1))
+
+    mae = mean_absolute_error(y_actual_rescaled, y_pred_rescaled)
+    mse = mean_squared_error(y_actual_rescaled, y_pred_rescaled)
+    
+    # Center-align and decrease the size of the subheader
+    st.markdown(
+        """
+        <div style='text-align: center;'>
+            <h3 style='font-size: 25px;'>Model Performance</h3>
+        </div>
+        """, unsafe_allow_html=True
+    )
+
+    col7, col8 = st.columns([5, 3])
+    with col8:
+        st.markdown(
+            f"""
+            <div>
+                <p style='padding-top:30px;font-size:16px; line-height:1.6;'>
+                    <strong>Metrics below  provide insight into the accuracy of the model's predictions.</strong><br>
+                    <p></p>
+                    <p></p>
+                    <strong>Mean Absolute Error (MAE):  {mae:.2f} </strong> <br> Measures the average magnitude of the errors in a set of predictions, without considering their direction. It gives an idea of how far off the model's predictions are from the actual values.<br>
+                    <p></p>
+                    <strong>Mean Squared Error (MSE):{mse:.2f} <br></strong> Measures the average of the squares of the errors—that is, the average squared difference between the estimated values and the actual value. MSE penalizes larger errors more than smaller ones, providing an idea of the variance in the prediction errors.
+                </p>
+            </div>
+            """, unsafe_allow_html=True
+        )
+    
+    with col7:
+        # Plot actual vs predicted values
+        fig2 = go.Figure()
+        fig2.add_trace(go.Scatter(x=np.arange(len(y_actual_rescaled)), y=y_actual_rescaled.flatten(), mode='lines', name='Actual Prices'))
+        fig2.add_trace(go.Scatter(x=np.arange(len(y_pred_rescaled)), y=y_pred_rescaled.flatten(), mode='lines', name='Predicted Prices', line=dict(color='green')))
+        fig2.update_layout(title=f'Actual vs Predicted Prices for {selected_company}', xaxis_title='Time', yaxis_title='Price')
+        st.plotly_chart(fig2)
 
     st.markdown('#')
 

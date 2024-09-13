@@ -12,6 +12,7 @@ import logging
 logging.basicConfig(filename='app.log', level=logging.ERROR)
 
 def main():
+    st.cache_data
     def scrape_and_analyze(tickers):
         finviz_url = 'https://finviz.com/quote.ashx?t='
         news_tables = {}

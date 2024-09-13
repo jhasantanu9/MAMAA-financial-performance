@@ -33,6 +33,7 @@ connection_string = (
 engine = create_engine(connection_string)
 
 # Function to fetch data from the database
+@st.cache_data
 def fetch_data():
     companies_query = 'SELECT * FROM company_data'
     daily_data_query = 'SELECT * FROM daily_data'
@@ -53,6 +54,11 @@ companies_df, daily_df, technical_indicator_df = fetch_data()
 merged_df = pd.merge(daily_df, companies_df, on='symbol', how='inner')
 merged_df = pd.merge(merged_df, technical_indicator_df, on=['symbol', 'date'], how='inner')
 
+# Selecting relevant columns for the model
+final_data = merged_df[['date', 'symbol', 'high', 'low', 'close', 'volume', 'sma', 'ema', 'rsi']]
+final_data['date'] = pd.to_datetime(final_data['date'])
+final_data = final_data.set_index('date')
+
 # Load the selected page
 if selected == "Home":
     import Home
@@ -68,6 +74,6 @@ elif selected == "News & Sentiment":
 
 elif selected == "Financial Scores":
     import Financial_Scores
-    Financial_Scores.main(merged_df)
+    Financial_Scores.main(merged_df, final_data)
 
 footer()

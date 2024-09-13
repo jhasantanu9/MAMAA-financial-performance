@@ -1,6 +1,7 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
 
+st.cache_data
 def main():
     # Custom CSS for layout and styling
     st.markdown("""

@@ -3,6 +3,7 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objs as go
 
+st.cache_data
 def main (companies_df, daily_df):
 
     # Create two columns with different proportions for title and select box
