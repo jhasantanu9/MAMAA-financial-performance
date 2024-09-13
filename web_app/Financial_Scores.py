@@ -8,6 +8,13 @@ from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras.models import load_model
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 
+# Define the path to the 'web_app' directory
+models_dir = 'web_app'
+
+def load_lstm_model(symbol):
+    model_path = os.path.join(models_dir, f'{symbol}_lstm_model.h5')
+    return load_model(model_path)
+
 @st.cache_data
 def create_dataset(data, time_step=60):
     X, y = [], []
@@ -26,7 +33,7 @@ def predict_next_30_days(symbol, final_data):
     X, _ = create_dataset(scaled_data, time_step)
     X = X.reshape(X.shape[0], X.shape[1], 1)
 
-    model = load_lstm_model(symbol)  # Updated
+    model = load_lstm_model(symbol)
 
     last_60_days = company_data[-60:].values
     last_60_days_scaled = scaler.transform(last_60_days)
@@ -161,13 +168,6 @@ def main(merged_df, final_data):
         title= f'{selected_company}',
         yaxis_title='Closing Price')         
     st.plotly_chart(fig)
-
-    # Define the path to the 'web_app' directory
-    models_dir = 'web_app'
-
-    def load_lstm_model(symbol):
-        model_path = os.path.join(models_dir, f'{symbol}_lstm_model.h5')
-        return load_model(model_path)
 
     scaler = MinMaxScaler(feature_range=(0, 1))
     X_scaled = scaler.fit_transform(final_data[final_data['symbol'] == selected_company][['close']])
