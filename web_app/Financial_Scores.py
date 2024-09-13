@@ -7,7 +7,6 @@ import streamlit.components.v1 as components
 from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras.models import load_model
 from sklearn.metrics import mean_absolute_error, mean_squared_error
-import os
 
 @st.cache_data
 def create_dataset(data, time_step=60):
@@ -163,11 +162,7 @@ def main(merged_df, final_data):
         yaxis_title='Closing Price')         
     st.plotly_chart(fig)
 
-    # Define the path to the current directory where app.py and models are stored
-    path = os.path.dirname(os.path.abspath(__file__))
-
-    # Load the selected company's model using the path
-    model = load_model(os.path.join(path, f'{selected_company}_lstm_model.h5'))
+    model = load_model(f' ./{selected_company}_lstm_model.h5')
 
     scaler = MinMaxScaler(feature_range=(0, 1))
     X_scaled = scaler.fit_transform(final_data[final_data['symbol'] == selected_company][['close']])
