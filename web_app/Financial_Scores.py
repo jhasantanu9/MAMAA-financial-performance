@@ -1,18 +1,12 @@
-import os
 import streamlit as st
 import numpy as np
 import pandas as pd
 import plotly.graph_objs as go
+import plotly.express as px
+import streamlit.components.v1 as components
 from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras.models import load_model
 from sklearn.metrics import mean_absolute_error, mean_squared_error
-
-# Define the path to the 'web_app' directory
-models_dir = 'web_app'
-
-def load_lstm_model(symbol):
-    model_path = os.path.join(models_dir, f'{symbol}_lstm_model.h5')
-    return load_model(model_path)
 
 @st.cache_data
 def create_dataset(data, time_step=60):
@@ -32,7 +26,7 @@ def predict_next_30_days(symbol, final_data):
     X, _ = create_dataset(scaled_data, time_step)
     X = X.reshape(X.shape[0], X.shape[1], 1)
 
-    model = load_lstm_model(symbol)
+    model = load_lstm_model(symbol)  # Updated
 
     last_60_days = company_data[-60:].values
     last_60_days_scaled = scaler.transform(last_60_days)
@@ -58,29 +52,44 @@ def predict_next_30_days(symbol, final_data):
     combined_df = pd.concat([historical_prices, future_prices_df.set_index('date')], axis=0)
     
     return combined_df, historical_dates, future_dates, future_predictions
+    
+@st.cache_data
+def calculate_moving_averages(df, window=50):
+    df[f'ma_{window}'] = df['close'].rolling(window=window).mean()
+    return df
 
+@st.cache_data
 def calculate_investment_scores(df):
-    df.loc[:, 'investment_score'] = (df['price_momentum'] +
-                                     df['volatility_score'] +
-                                     df['volume_score'] +
-                                     df['ema_sma_score'] +
-                                     df['rsi_score']) / 5
+    df = calculate_moving_averages(df, 10)  # Short-term SAM
+    df = calculate_moving_averages(df, 50)  # Mid-term SAM
+    df = calculate_moving_averages(df, 200) # Long-term SAM
+    
+    df['price_momentum'] = (df['close'] - df['close'].shift(1)) / df['close'].shift(1) * 100
+    df['volatility_score'] = (df['high'] - df['low']) / df['close'] * 100
+    df['volume_score'] = (df['volume'] - df['volume'].rolling(window=50).mean()) / df['volume'].rolling(window=50).mean() * 100
+    df['ema_sma_score'] = df.apply(lambda row: 1 if row['ema'] > row['ma_50'] else -1, axis=1)
+    df['rsi_score'] = df['rsi'].apply(lambda x: 2 if x < 30 else (-2 if x > 70 else 0))
+    df['investment_score'] = 0.25 * df['price_momentum'] + \
+                            0.25 * df['volatility_score'] + \
+                            0.20 * df['volume_score'] + \
+                            0.20 * df['ema_sma_score'] + \
+                            0.10 * df['rsi_score']
+
     return df
 
+@st.cache_data
 def generate_investment_signals(df):
-    df.loc[:, 'signal'] = np.where(df['investment_score'] > 0, 'BUY', 'SELL')
+    df['signal'] = df['investment_score'].apply(lambda x: 'Buy' if x > 0 else ('Sell' if x < 0 else 'Hold'))
     return df
 
+@st.cache_data
 def plot_investment_score_over_time(df, symbol):
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=df.index, y=df['investment_score'], mode='lines', name='Investment Score'))
-    fig.update_layout(title=f'Investment Score Over Time for {symbol}', xaxis_title='Date', yaxis_title='Score')
+    fig = px.line(df, x='date', y='investment_score', title='Investment Score')
     return fig
 
+@st.cache_data
 def plot_signals(df, symbol):
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=df.index, y=df['signal'].apply(lambda x: 1 if x == 'BUY' else 0), mode='markers', name='Signals'))
-    fig.update_layout(title=f'Investment Signals for {symbol}', xaxis_title='Date', yaxis_title='Signal')
+    fig = px.scatter(df, x='date', y='investment_score', color='signal', title='Investment Signal')
     return fig
 
 def main(merged_df, final_data):
@@ -97,7 +106,7 @@ def main(merged_df, final_data):
 
     st.write("")
 
-    col3, col4 = st.columns([3, 3])
+    col3, col4 = st.columns([3,3])
     with col3:
         latest_data = company_data.iloc[-1]
         st.markdown(
@@ -132,7 +141,7 @@ def main(merged_df, final_data):
 
     st.write("")
 
-    col5, col6 = st.columns([3, 3])
+    col5, col6 = st.columns([3,3])
     with col5:
         st.plotly_chart(plot_investment_score_over_time(company_data, selected_company))
 
@@ -149,16 +158,21 @@ def main(merged_df, final_data):
     fig.add_trace(go.Scatter(x=historical_dates, y=combined_data['close'][:60], mode='lines', name='Historical Prices'))
     fig.add_trace(go.Scatter(x=future_dates, y=future_prices.flatten(), mode='lines+markers', name='Predicted Prices'))
     fig.update_layout(
-        title=f'{selected_company}',
+        title= f'{selected_company}',
         yaxis_title='Closing Price')         
     st.plotly_chart(fig)
+
+    # Define the path to the 'web_app' directory
+    models_dir = 'web_app'
+
+    def load_lstm_model(symbol):
+        model_path = os.path.join(models_dir, f'{symbol}_lstm_model.h5')
+        return load_model(model_path)
 
     scaler = MinMaxScaler(feature_range=(0, 1))
     X_scaled = scaler.fit_transform(final_data[final_data['symbol'] == selected_company][['close']])
     X, y = create_dataset(X_scaled, time_step=60)
     
-    model = load_lstm_model(selected_company)  # Ensure model is loaded here
-
     y_pred = model.predict(X)
     y_pred_rescaled = scaler.inverse_transform(y_pred.reshape(-1, 1))
     y_actual_rescaled = scaler.inverse_transform(y.reshape(-1, 1))
@@ -173,6 +187,7 @@ def main(merged_df, final_data):
         </div>
         """, unsafe_allow_html=True
     )
+
     col7, col8 = st.columns([5, 3])
     with col8:
         st.markdown(
