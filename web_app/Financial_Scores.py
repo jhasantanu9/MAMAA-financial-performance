@@ -173,6 +173,8 @@ def main(merged_df, final_data):
     scaler = MinMaxScaler(feature_range=(0, 1))
     X_scaled = scaler.fit_transform(final_data[final_data['symbol'] == selected_company][['close']])
     X, y = create_dataset(X_scaled, time_step=60)
+
+    model = load_lstm_model(selected_company)
     
     y_pred = model.predict(X)
     y_pred_rescaled = scaler.inverse_transform(y_pred.reshape(-1, 1))
