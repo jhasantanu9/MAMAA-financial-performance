@@ -26,7 +26,7 @@ def predict_next_30_days(symbol, final_data):
     X, _ = create_dataset(scaled_data, time_step)
     X = X.reshape(X.shape[0], X.shape[1], 1)
 
-    model = load_model(f'{symbol}_lstm_model.h5')
+    model = load_lstm_model(symbol)  # Updated
 
     last_60_days = company_data[-60:].values
     last_60_days_scaled = scaler.transform(last_60_days)
@@ -52,7 +52,7 @@ def predict_next_30_days(symbol, final_data):
     combined_df = pd.concat([historical_prices, future_prices_df.set_index('date')], axis=0)
     
     return combined_df, historical_dates, future_dates, future_predictions
-
+    
 @st.cache_data
 def calculate_moving_averages(df, window=50):
     df[f'ma_{window}'] = df['close'].rolling(window=window).mean()
