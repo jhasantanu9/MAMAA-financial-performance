@@ -40,6 +40,9 @@ def main():
         .btn-portfolio {
             background-color: #17a2b8;
         }
+        .btn-repo {
+            background-color: #6c757d;
+        }
         .protection-container {
             text-align: center;
             margin-top: 3rem;
@@ -71,6 +74,7 @@ def main():
                 <a href="https://www.linkedin.com/in/santanu-jha-845510292/" target="_blank" class="btn btn-linkedin">LinkedIn</a>
                 <a href="https://github.com/jhasantanu9" target="_blank" class="btn btn-github">GitHub</a>
                 <a href="https://santanujha.netlify.app" target="_blank" class="btn btn-portfolio">Portfolio</a>
+                <a href="https://github.com/jhasantanu9/MAMAA-financial-performance/tree/main" target="_blank" class="btn btn-repo">GitHub Repo</a>
             </div>
         </div>
     """, unsafe_allow_html=True)
