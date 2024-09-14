@@ -4,10 +4,7 @@ import os
 
 @st.cache_data
 def main():
-
-
-    st.write(os.listdir())  # This will print the list of files in the current directory
-
+    
     # Custom CSS for layout and styling
     st.markdown("""
         <style>
@@ -16,6 +13,10 @@ def main():
         }
         .welcome-text {
             text-align: center;
+            margin-top: 3rem;
+        }
+        .app-description {
+            text-align: left;
             margin-top: 3rem;
         }
         .contact-container {
@@ -43,6 +44,9 @@ def main():
         .btn-portfolio {
             background-color: #17a2b8;
         }
+        .btn-repo {
+            background-color: #6c757d;
+        }
         .protection-container {
             text-align: center;
             margin-top: 3rem;
@@ -65,6 +69,7 @@ def main():
         <div class="app-description">
             <p>The MAMAA Financial Insights app is designed to provide a deep dive into the financial health of major tech giants. The app regularly collects data from a reliable API, stores it in a robust database, and uses this data to perform detailed analyses. By leveraging techniques in data scraping, database management, and financial analytics, including advanced machine learning with LSTM networks for predicting stock closing prices, the app delivers up-to-date insights crucial for making informed investment choices.</p>
             <p>This app is powered by Streamlit, enabling a seamless and interactive user experience. It combines the power of Python, SQL, and API handling to bring you comprehensive financial insights at your fingertips.</p>
+            <p><a href="https://github.com/jhasantanu9/MAMAA-financial-performance/tree/main" target="_blank" style="color: #007bff; text-decoration: none; font-weight: bold;">View the GitHub Repository</a></p>
         </div>
         
         <div class="contact-container">
@@ -74,6 +79,7 @@ def main():
                 <a href="https://www.linkedin.com/in/santanu-jha-845510292/" target="_blank" class="btn btn-linkedin">LinkedIn</a>
                 <a href="https://github.com/jhasantanu9" target="_blank" class="btn btn-github">GitHub</a>
                 <a href="https://santanujha.netlify.app" target="_blank" class="btn btn-portfolio">Portfolio</a>
+                <a href="https://github.com/jhasantanu9/MAMAA-financial-performance/tree/main" target="_blank" class="btn btn-repo">GitHub Repo</a>
             </div>
         </div>
     """, unsafe_allow_html=True)
