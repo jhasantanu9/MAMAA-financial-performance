@@ -5,9 +5,16 @@ import plotly.graph_objs as go
 import plotly.express as px
 import streamlit.components.v1 as components
 from sklearn.preprocessing import MinMaxScaler
-import tensorflow as tf
-from keras.models import load_model
+from tensorflow.keras.models import load_model
 from sklearn.metrics import mean_absolute_error, mean_squared_error
+import os
+
+# Define the path to the 'web_app' directory
+models_dir = 'web_app'
+
+def load_lstm_model(symbol):
+    model_path = os.path.join(models_dir, f'{symbol}_lstm_model.h5')
+    return load_model(model_path)
 
 @st.cache_data
 def create_dataset(data, time_step=60):
@@ -27,7 +34,7 @@ def predict_next_30_days(symbol, final_data):
     X, _ = create_dataset(scaled_data, time_step)
     X = X.reshape(X.shape[0], X.shape[1], 1)
 
-    model = load_model(f'{symbol}_lstm_model.h5')
+    model = load_lstm_model(symbol)
 
     last_60_days = company_data[-60:].values
     last_60_days_scaled = scaler.transform(last_60_days)
@@ -53,7 +60,7 @@ def predict_next_30_days(symbol, final_data):
     combined_df = pd.concat([historical_prices, future_prices_df.set_index('date')], axis=0)
     
     return combined_df, historical_dates, future_dates, future_predictions
-
+    
 @st.cache_data
 def calculate_moving_averages(df, window=50):
     df[f'ma_{window}'] = df['close'].rolling(window=window).mean()
@@ -163,11 +170,11 @@ def main(merged_df, final_data):
         yaxis_title='Closing Price')         
     st.plotly_chart(fig)
 
-    model = load_model(f'./{symbol}_lstm_model.h5')
-
     scaler = MinMaxScaler(feature_range=(0, 1))
     X_scaled = scaler.fit_transform(final_data[final_data['symbol'] == selected_company][['close']])
     X, y = create_dataset(X_scaled, time_step=60)
+
+    model = load_lstm_model(selected_company)
     
     y_pred = model.predict(X)
     y_pred_rescaled = scaler.inverse_transform(y_pred.reshape(-1, 1))
