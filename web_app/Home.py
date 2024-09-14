@@ -75,11 +75,17 @@ def main():
         <div class="contact-container">
             <h4 style="text-align: center;">Get in Touch</h4>
             <div class="social-links">
+                <p><a href="https://github.com/jhasantanu9/MAMAA-financial-performance/tree/main" target="_blank" style="color: #007bff; text-decoration: none; font-weight: bold;">View the GitHub Repository</a></p>
+            </div>
+        </div>               
+        
+        <div class="contact-container">
+            <h4 style="text-align: center;">Get in Touch</h4>
+            <div class="social-links">
                 <a href="mailto:jhasantanu9@gmail.com" class="btn btn-primary">Email</a>
                 <a href="https://www.linkedin.com/in/santanu-jha-845510292/" target="_blank" class="btn btn-linkedin">LinkedIn</a>
                 <a href="https://github.com/jhasantanu9" target="_blank" class="btn btn-github">GitHub</a>
                 <a href="https://santanujha.netlify.app" target="_blank" class="btn btn-portfolio">Portfolio</a>
-                <a href="https://github.com/jhasantanu9/MAMAA-financial-performance/tree/main" target="_blank" class="btn btn-repo">GitHub Repo</a>
             </div>
         </div>
     """, unsafe_allow_html=True)
