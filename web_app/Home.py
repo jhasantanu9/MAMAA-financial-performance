@@ -67,7 +67,7 @@ def main():
             <p>This app is powered by Streamlit, enabling a seamless and interactive user experience. It combines the power of Python, SQL, and API handling to bring you comprehensive financial insights at your fingertips.</p>
         </div>
 
-                <div class="contact-container">
+        <div class="contact-container">
             <h4 style="text-align:left;">Get in Touch</h4>
             <div class="social-links">
                 <a href="https://github.com/jhasantanu9/MAMAA-financial-performance/tree/main" target="_blank" class="btn btn-repo">GitHub Repo</a>
