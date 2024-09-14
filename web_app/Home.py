@@ -4,10 +4,7 @@ import os
 
 @st.cache_data
 def main():
-
-
-    st.write(os.listdir())  # This will print the list of files in the current directory
-
+    
     # Custom CSS for layout and styling
     st.markdown("""
         <style>
