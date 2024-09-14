@@ -23,6 +23,12 @@ def main():
             text-align: center;
             margin-top: 3rem;
         }
+                
+        .contact-container1 {
+            text-align: left;
+            margin-top: 3rem;
+        }
+                
         .social-links a {
             display: inline-block;
             margin: 0 10px;
@@ -71,8 +77,10 @@ def main():
             <p>This app is powered by Streamlit, enabling a seamless and interactive user experience. It combines the power of Python, SQL, and API handling to bring you comprehensive financial insights at your fingertips.</p>
         </div>
         
-        <div class="contact-container">
-                <a href="https://github.com/jhasantanu9/MAMAA-financial-performance/tree/main" target="_blank"  class="btn btn-repo">View the GitHub Repository</a>
+        <div class="contact-container1">
+                <div class="social-links">
+                    <a href="https://github.com/jhasantanu9/MAMAA-financial-performance/tree/main" target="_blank"  class="btn btn-repo">View the GitHub Repository</a>
+                </div
             </div>
         </div>               
         
