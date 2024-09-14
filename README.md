@@ -4,6 +4,8 @@
 
 The **MAMAA Financial Performance** project provides comprehensive insights into the financial performance and trends of major tech companies known as MAMAA: Microsoft, Apple, Meta, Amazon, and Alphabet. This web app delivers detailed analysis and visualizations to aid in making informed investment decisions by integrating data scraping, financial analytics, and advanced machine learning techniques.
 
+Explore the live application here: [MAMAA Financial Performance Web App](https://mamaa-financial-performance.streamlit.app/)
+
 ## Main Objectives
 
 - **Financial Insights**: Explore detailed analyses and visualizations of MAMAA companies' financial performance.
@@ -35,6 +37,37 @@ The **MAMAA Financial Performance** project provides comprehensive insights into
 ### Data Update and Insights
 
 - **ETL Process**: Data is updated daily using ETL processes and cron jobs to ensure the most recent information is available for analysis.
+
+## Repository Structure
+
+The repository is organized into several key directories:
+
+- **`web_app/`**: Contains the Streamlit application code and models.
+  - `.streamlit/`: Configuration for Streamlit.
+  - `__pycache__/`: Compiled Python files.
+  - `app.py`: Main script to run the Streamlit app.
+  - `create_lstm_model.py`: Script for creating LSTM models.
+  - `Financial_Scores.py`: Contains functions for calculating financial scores.
+  - `Home.py`: Home page script for the app.
+  - `News_Sentiment.py`: Script for news scraping and sentiment analysis.
+  - `Overview.py`: Script for the app's overview page.
+  - `requirements.txt`: List of Python dependencies.
+  - `utils.py`: Utility functions for the app.
+  - Model files (`AAPL_lstm_model.h5`, `AMZN_lstm_model.h5`, etc.): Pretrained LSTM models.
+
+- **`ETL/`**: Contains scripts and documentation for the ETL process.
+  - `ETL PROCESS.txt`: Documentation for the ETL process.
+  - `ETL Script.ipynb`: Jupyter notebook for ETL scripting.
+
+- **`Database/`**: Contains database-related files.
+  - `EER Diagram.mwb`: EER diagram file.
+  - `ER.png`: ER diagram image.
+  - `table_creation.sql`: SQL script for table creation.
+
+- **`scheduled_update_database/`**: Contains scripts for updating the database.
+  - `company_data.py`: Script for managing company data.
+  - `daily_data.py`: Script for managing daily data.
+  - `technical_indicators.py`: Script for calculating technical indicators.
 
 ## Deployment
 
@@ -76,4 +109,3 @@ For any questions or feedback, feel free to reach out via:
 - **LinkedIn**: [Santanu Jha](https://www.linkedin.com/in/santanu-jha-845510292/)
 - **GitHub**: [jhasantanu9](https://github.com/jhasantanu9)
 - **Portfolio**: [santanujha.netlify.app](https://santanujha.netlify.app)
-
